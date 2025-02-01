@@ -23,7 +23,7 @@ async def submit_todo(todo: TodoItem):
     # Validate & transform TODO
     validated_todo = await validate_todo(todo)
     
-    # Call duplicator service
+    # Call duplicator servicesdfasdf
     async with httpx.AsyncClient() as client:
         duplicator_response = await client.post(
             "http://duplicator:8001/processStep",
@@ -61,3 +61,7 @@ def store_in_database(todo_data: dict) -> TodoResponse:
         due_date=todo_data.get("due_date"),
         created_at=datetime.now()
     )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
