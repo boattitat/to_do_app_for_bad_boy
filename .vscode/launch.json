@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Session Manager",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app:app",
+                "--reload"
+            ],
+            "python": "${workspaceFolder}/src/session_manager/.venv/bin/python",
+            "cwd": "${workspaceFolder}/src/session_manager",
+            "jinja": true
+        },
+        {
+            "name": "Python Debugger: Duplicator",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app:app",
+                "--reload"
+            ],
+            "python": "${workspaceFolder}/src/duplicator/.venv/bin/python",
+            "cwd": "${workspaceFolder}/src/duplicator",
+            "jinja": true
+        },
+        {
+            "name": "Python Debugger: Finalizer",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "app:app",
+                "--reload"
+            ],
+            "python": "${workspaceFolder}/src/finalizer/.venv/bin/python",
+            "cwd": "${workspaceFolder}/src/finalizer",
+            "jinja": true
+        }
+    ]
+}
