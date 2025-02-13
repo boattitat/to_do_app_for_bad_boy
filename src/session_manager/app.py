@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 import httpx
+次回：session manager とduplicatorを繋ぐ
 from datetime import datetime
 from models.todo_item import TodoItem, TodoResponse
 from services.duplicator_service import HttpDuplicatorService
@@ -12,18 +13,6 @@ from services.finalizer_service import MockFinalizerService
 app = FastAPI()
 duplicator_service = MockDuplicatorService()
 finalizer_service = MockFinalizerService()
-
-# class TodoItem(BaseModel):
-#     title: str
-#     description: Optional[str] = None
-#     due_date: Optional[datetime] = None
-
-# class TodoResponse(BaseModel):
-#     id: str
-#     title: str
-#     description: Optional[str] = None
-#     due_date: Optional[datetime] = None
-#     created_at: datetime
     
 
 @app.post("/submit", response_model=TodoResponse)
@@ -35,9 +24,9 @@ async def submit_todo(todo: TodoItem):
     duplicated_todo = await duplicator_service.duplicate_todo(validated_todo)
     
     # Call finalizer service
-    finalized_todo = await finalizer_service.finalize_todo(duplicated_todo)
+    # finalized_todo = await finalizer_service.finalize_todo(duplicated_todo)
     
-    return finalized_todo
+    return duplicated_todo
 
 async def validate_todo(todo: TodoItem) -> TodoItem:
     # TODO: Implement validation logic
