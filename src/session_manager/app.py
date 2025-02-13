@@ -3,54 +3,50 @@ from pydantic import BaseModel
 from typing import List, Optional
 import httpx
 from datetime import datetime
+from models.todo_item import TodoItem, TodoResponse
+from services.duplicator_service import HttpDuplicatorService
+from services.finalizer_service import HttpFinalizerService
+from services.duplicator_service import MockDuplicatorService
+from services.finalizer_service import MockFinalizerService
 
 app = FastAPI()
+duplicator_service = MockDuplicatorService()
+finalizer_service = MockFinalizerService()
 
-class TodoItem(BaseModel):
-    title: str
-    description: Optional[str] = None
-    due_date: Optional[datetime] = None
+# class TodoItem(BaseModel):
+#     title: str
+#     description: Optional[str] = None
+#     due_date: Optional[datetime] = None
 
-class TodoResponse(BaseModel):
-    id: str
-    title: str
-    description: Optional[str] = None
-    due_date: Optional[datetime] = None
-    created_at: datetime
+# class TodoResponse(BaseModel):
+#     id: str
+#     title: str
+#     description: Optional[str] = None
+#     due_date: Optional[datetime] = None
+#     created_at: datetime
+    
 
 @app.post("/submit", response_model=TodoResponse)
 async def submit_todo(todo: TodoItem):
-    # Validate & transform TODO
+
     validated_todo = await validate_todo(todo)
     
-    # Call duplicator servicesdfasdf
-    async with httpx.AsyncClient() as client:
-        duplicator_response = await client.post(
-            "http://duplicator:8001/processStep",
-            json=validated_todo.dict()
-        )
-        if duplicator_response.status_code != 200:
-            raise HTTPException(status_code=500, detail="Duplicator service error")
-        
-        # Call finalizer service
-        finalizer_response = await client.post(
-            "http://finalizer:8002/finalize",
-            json=duplicator_response.json()
-        )
-        if finalizer_response.status_code != 200:
-            raise HTTPException(status_code=500, detail="Finalizer service error")
-        
-        # TODO: Insert into database
-        return store_in_database(finalizer_response.json())
+    # Call duplicator service
+    duplicated_todo = await duplicator_service.duplicate_todo(validated_todo)
+    
+    # Call finalizer service
+    finalized_todo = await finalizer_service.finalize_todo(duplicated_todo)
+    
+    return finalized_todo
+
+async def validate_todo(todo: TodoItem) -> TodoItem:
+    # TODO: Implement validation logic
+    return todo
 
 @app.get("/todos", response_model=List[TodoResponse])
 async def get_todos():
     # TODO: Implement database retrieval
     return []
-
-async def validate_todo(todo: TodoItem) -> TodoItem:
-    # TODO: Implement validation logic
-    return todo
 
 def store_in_database(todo_data: dict) -> TodoResponse:
     # TODO: Implement database storage
